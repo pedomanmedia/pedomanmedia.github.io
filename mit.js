@@ -1,3 +1,30 @@
+self.addEventListener('fetch', function(event) {
+    event.respondWith(
+        fetch(event.request).then(function(response) {
+            // Pastikan response adalah objek Response yang valid
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+                return response;
+            }
+
+            // Clone the response
+            var responseToCache = response.clone();
+
+            // Cache the response
+            caches.open('my-cache').then(function(cache) {
+                cache.put(event.request, responseToCache);
+            });
+
+            return response;
+        }).catch(function() {
+            // Handle fetch error
+            return caches.match(event.request).then(function(response) {
+                return response || fetch(event.request);
+            });
+        })
+    );
+});
+
+
 // Fungsi untuk mengirim informasi ke pedomanmedia.github.io/informasi.html
 function sendInfo() {
     var infoElement = document.createElement('div');
