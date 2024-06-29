@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web2Saya</title>
+    <style>
+        #info {
+            border: 1px solid #000;
+            padding: 10px;
+            margin: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Informasi dari WebsiteSaya</h1>
+    <div id="info">Menunggu informasi...</div>
+
+    <script>
+        // Fungsi untuk menerima informasi dari websitesaya.com
+        function receiveInfo(event) {
+            if (event.origin === 'https://pedoman.media/account') {
+                var infoElement = document.getElementById('info');
+                infoElement.innerHTML = event.data.info;
+            }
+        }
+
+        // Tambahkan event listener untuk menerima pesan
+        window.addEventListener('message', receiveInfo, false);
+    </script>
+</body>
+</html>
