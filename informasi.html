@@ -20,7 +20,7 @@
     <script>
         // Fungsi untuk menerima informasi dari websitesaya.com
         function receiveInfo(event) {
-            if (event.origin === 'https://pedoman.media/account') {
+            if (event.origin === 'https://pedoman.media') {
                 var infoElement = document.getElementById('info');
                 infoElement.innerHTML = event.data.info;
             }
