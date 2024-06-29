@@ -4,10 +4,11 @@ function sendInfo() {
     infoElement.id = 'info';
     infoElement.innerHTML = 'Informasi dari https://pedoman.media/account';
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://pedomanmedia.github.io/informasi.html', true);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-    xhr.send(JSON.stringify({ info: infoElement.innerHTML }));
+    // Kirim pesan ke iframe
+    var iframe = document.querySelector('iframe');
+    if (iframe) {
+        iframe.contentWindow.postMessage({ info: infoElement.innerHTML }, 'https://pedomanmedia.github.io');
+    }
 
     document.body.appendChild(infoElement);
 }
