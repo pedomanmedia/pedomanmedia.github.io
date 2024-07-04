@@ -8,14 +8,16 @@
 <body>
     <h1>Data Tabel dari Profil Saya</h1>
     <input class="form-control" value="https://pedoman.media/account" type="text" name="facebook">
-    <button onclick="loadTable()">Tampilkan Data</button>
+    <button onclick="startFetching()">Tampilkan Data</button>
     <div id="tabel-container"></div>
 
     <script>
-        function loadTable() {
+        let intervalId;
+
+        function startFetching() {
             const url = document.querySelector('input[name="facebook"]').value;
-            console.log('Fetching data from URL:', url); // Log URL untuk debugging
-            fetchTableData(url);
+            console.log('Starting to fetch data from URL:', url); // Log URL untuk debugging
+            intervalId = setInterval(() => fetchTableData(url), 5000);
         }
 
         function fetchTableData(url) {
@@ -26,7 +28,7 @@
                     'Accept-Encoding': 'gzip, deflate, br, zstd',
                     'Accept-Language': 'id,en;q=0.9',
                     'Cache-Control': 'no-cache',
-                    'Cookie': 'session_locale=id; BUMers=95703cb5f730b29d0abeb0c180b8bd92dccd4a65a64328f772a0418554a1ed1564882b4101e6ea40f1a0bc37ade54950281743a498df641fa3559ef16c8cd0f2bjWAJMcbOvOIGnaXrBjjPHXpLDBHMA0Q5pCBgENHvRBypfOlZ5G8nwZCPvQUe%2FhKGLbx3qLvADNhSnMh5Wur0w%3D%3D; FCNEC=%5B%5B%22AKsRol8ZWECM0DI1g8cOTEA9aXEDg5IVxuxGilOg3gCgzfGVpncsBeKVXsuNYlNz1KhMHK3-9-Z9rsIYsc8ESi7oNKlvWMPZynY5IqdbNUP4atVXg0qRFSCPGbv2P6qFAAhPvsXd6T3u6cEqskwYTzQzH0AWdPhM9g%3D%3D%22%5D%5D; __gads=ID=586fdc85fbd23522:T=1718936642:RT=1719859047:S=ALNI_Ma-jVGHM-4ePLgIxyIW6gk00JlrOA; __eoi=ID=d94fdd8cf9c356e8:T=1718936642:RT=1719859047:S=AA-AfjYuqCwgvOshTc0jPU84qHoW; _gid=GA1.2.1436325765.1720056634; timezone=Asia/Shanghai; cpsession=%3arzVbFyxSjAQa4dCr%2c9f45462d27afe373063d53b560a2ba30; _ga=GA1.2.372007970.1718461805; newz_session=e6d123c688d672373e237d581d4cacc09d5d328b; _ga_3N8ZFL16EH=GS1.1.1720068434.30.1.1720077350.59.0.0'
+                    'Cookie': document.cookie // Mengirim semua cookie yang ada
                 }
             })
             .then(response => {
