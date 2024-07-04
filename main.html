@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tampilkan Tabel</title>
+</head>
+<body>
+    <h1>Data Tabel dari Profil Saya</h1>
+    <div id="tabel-container"></div>
+
+    <script>
+        // Fungsi untuk mengambil data tabel dari URL yang diberikan
+        function fetchTableData(url) {
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    // Membuat elemen HTML untuk menampilkan data
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'text/html');
+                    const table = doc.querySelector('table'); // Asumsi tabel adalah elemen <table>
+                    document.getElementById('tabel-container').appendChild(table);
+                })
+                .catch(error => console.error('Error fetching table data:', error));
+        }
+
+        // Panggil fungsi untuk mengambil data saat halaman dimuat
+        window.onload = function() {
+            // Ambil URL dari input form di halaman lain
+            const urlInput = document.querySelector('input[name="facebook"]').value;
+            fetchTableData(urlInput);
+        };
+    </script>
+</body>
+</html>
