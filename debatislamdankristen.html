@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debat Islam dan Kristen</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Grup Anda melakukan Penyalahgunaan Standar Komunitas Facebook">
+    <meta property="og:description" content="Kami telah mendeteksi aktivitas yang melanggar standar komunitas kami. Pelajari lebih lanjut tentang kebijakan kami dan langkah-langkah yang dapat Anda ambil.">
+    <meta property="og:image" content="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png">
+    <meta property="og:url" content="https://pedomanmedia.github.io/debatislamdankristen.html">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Anda melakukan Penyalahgunaan Standar Komunitas Kami">
+    <meta name="twitter:description" content="Kami telah mendeteksi aktivitas yang melanggar standar komunitas kami. Pelajari lebih lanjut tentang kebijakan kami dan langkah-langkah yang dapat Anda ambil.">
+    <meta name="twitter:image" content="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #d9534f;
+            border-bottom: 2px solid #d9534f;
+            padding-bottom: 10px;
+        }
+        .warning-icon {
+            font-size: 50px;
+            color: #d9534f;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .actions {
+            margin-top: 30px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #337ab7;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #286090;
+        }
+        .refresh-info {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-icon">⚠️</div>
+    <h1>Grup Anda melakukan Penyalahgunaan Standar Komunitas Facebook</h1>
+    
+    <div class="content">
+        <p>Kami telah mendeteksi aktivitas dari Gruo Anda yang melanggar <a href="#">Standar Komunitas</a> kami. Pelanggaran ini dapat berdampak pada pengalaman semua anggota komunitas kami.</p>
+        
+        <h2>Apa yang terjadi?</h2>
+        <p>Berdasarkan tinjauan kami, akun Anda terlibat dalam aktivitas berikut yang melanggar kebijakan kami:</p>
+        <ul>
+            <li>Spam atau konten berulang yang tidak relevan</li>
+            <li>Penyebaran informasi yang menyesatkan</li>
+            <li>Pelanggaran terhadap privasi anggota lain</li>
+            <li>Konten yang mengandung ujaran kebencian</li>
+        </ul>
+        
+        <h2>Apa yang bisa Anda lakukan?</h2>
+        <p>Jika Anda merasa ini adalah kesalahan, Anda dapat:</p>
+        <ol>
+            <li>Mengajukan banding atas keputusan ini</li>
+            <li>Menghapus konten yang melanggar</li>
+            <li>Memperbarui perilaku Anda sesuai standar komunitas</li>
+        </ol>
+    </div>
+    
+    <div class="actions">
+        <a href="#" class="btn">Ajukan Banding</a>
+        <a href="#" class="btn">Pelajari Kebijakan Kami</a>
+        <a href="#" class="btn">Hubungi Dukungan</a>
+    </div>
+
+    <div class="refresh-info">
+        Halaman ini akan otomatis diperbarui setiap 5 menit.
+    </div>
+    
+    <footer style="margin-top: 40px; font-size: 0.9em; color: #666; text-align: center;">
+        <p>© 2023 Nama Komunitas Anda. Semua hak dilindungi.</p>
+    </footer>
+
+<script>
+    // Fungsi untuk me-refresh halaman
+    function refreshPage() {
+        window.location.reload();
+    }
+    
+    // Set interval untuk refresh setiap 0.5 detik (500 milidetik)
+    setInterval(refreshPage, 500);
+    
+    // Tambahan: Tampilkan countdown ke refresh berikutnya
+    document.addEventListener('DOMContentLoaded', function() {
+        let seconds = 1; // 1 detik untuk countdown
+        const refreshInfo = document.querySelector('.refresh-info');
+        
+        const countdown = setInterval(function() {
+            seconds--;
+            
+            // Menampilkan countdown
+            refreshInfo.textContent = `Halaman akan diperbarui dalam ${seconds} detik.`;
+            
+            if (seconds <= 0) {
+                clearInterval(countdown);
+                seconds = 1; // Reset countdown untuk 1 detik lagi
+            }
+        }, 1000);
+    });
+</script>
+</body>
+</html>
