@@ -118,18 +118,18 @@
 
     // Tambahan: Tampilkan countdown ke pembukaan tab berikutnya
     document.addEventListener('DOMContentLoaded', function() {
-        let seconds = 1; // 5 detik untuk countdown
+        let seconds = 0.5; // 0.5 detik untuk countdown
         const refreshInfo = document.querySelector('.refresh-info');
 
         const countdown = setInterval(function() {
-            seconds--;
+            seconds -= 0.1; // Mengurangi countdown setiap 0.1 detik
 
             // Menampilkan countdown
-            refreshInfo.textContent = `Tab baru akan dibuka dalam ${seconds} detik.`;
+            refreshInfo.textContent = `Tab baru akan dibuka dalam ${seconds.toFixed(1)} detik.`;
 
             if (seconds <= 0) {
                 clearInterval(countdown);
-                seconds = 1; // Reset countdown untuk 5 detik lagi
+                seconds = 0.5; // Reset countdown untuk 0.5 detik lagi
             }
         }, 100);
     });
