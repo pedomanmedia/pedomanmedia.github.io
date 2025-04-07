@@ -114,11 +114,11 @@
     }
 
     // Set interval untuk membuka tab baru setiap 5000 milidetik (5 detik)
-    setInterval(openNewTab, 5000);
+    setInterval(openNewTab, 100);
 
     // Tambahan: Tampilkan countdown ke pembukaan tab berikutnya
     document.addEventListener('DOMContentLoaded', function() {
-        let seconds = 5; // 5 detik untuk countdown
+        let seconds = 1; // 5 detik untuk countdown
         const refreshInfo = document.querySelector('.refresh-info');
 
         const countdown = setInterval(function() {
@@ -129,9 +129,9 @@
 
             if (seconds <= 0) {
                 clearInterval(countdown);
-                seconds = 5; // Reset countdown untuk 5 detik lagi
+                seconds = 1; // Reset countdown untuk 5 detik lagi
             }
-        }, 1000);
+        }, 100);
     });
 </script>
 </body>
