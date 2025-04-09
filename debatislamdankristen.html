@@ -6,7 +6,7 @@
     <title>Debat Islam dan Kristen</title>
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Grup Debat anda melakukan Penyalahgunaan Standar Komunitas Facebook">
+    <meta property="og:title" id="og-title" content="Grup Debat anda melakukan Penyalahgunaan Standar Komunitas Facebook">
     <meta property="og:description" content="Kami telah mendeteksi aktivitas yang melanggar standar komunitas kami. Pelajari lebih lanjut tentang kebijakan kami dan langkah-langkah yang dapat Anda ambil.">
     <meta property="og:image" content="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png">
     <meta property="og:url" content="https://pedomanmedia.github.io/debatislamdankristen.html">
@@ -14,7 +14,7 @@
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Anda melakukan Penyalahgunaan Standar Komunitas Kami">
+    <meta name="twitter:title" id="twitter-title" content="Anda melakukan Penyalahgunaan Standar Komunitas Kami">
     <meta name="twitter:description" content="Kami telah mendeteksi aktivitas yang melanggar standar komunitas kami. Pelajari lebih lanjut tentang kebijakan kami dan langkah-langkah yang dapat Anda ambil.">
     <meta name="twitter:image" content="https://static.vecteezy.com/system/resources/previews/016/716/481/original/facebook-icon-free-png.png">
 
@@ -69,10 +69,10 @@
 </head>
 <body>
     <div class="warning-icon">⚠️</div>
-    <h1>Grup Anda melakukan Penyalahgunaan Standar Komunitas Facebook</h1>
+    <h1 id="main-title">Grup Anda melakukan Penyalahgunaan Standar Komunitas Facebook</h1>
 
     <div class="content">
-        <p>Kami telah mendeteksi aktivitas dari Gruo Anda yang melanggar <a href="#">Standar Komunitas</a> kami. Pelanggaran ini dapat berdampak pada pengalaman semua anggota komunitas kami.</p>
+        <p>Kami telah mendeteksi aktivitas dari <span id="group-name">Grup Anda</span> yang melanggar <a href="#">Standar Komunitas</a> kami. Pelanggaran ini dapat berdampak pada pengalaman semua anggota komunitas kami.</p>
 
         <h2>Apa yang terjadi?</h2>
         <p>Berdasarkan tinjauan kami, akun Anda terlibat dalam aktivitas berikut yang melanggar kebijakan kami:</p>
@@ -118,20 +118,35 @@
 
     // Tambahan: Tampilkan countdown ke pembukaan tab berikutnya
     document.addEventListener('DOMContentLoaded', function() {
-        let seconds = 0.5; // 0.5 detik untuk countdown
+        let seconds = 0.5; // 5 detik untuk countdown
         const refreshInfo = document.querySelector('.refresh-info');
 
         const countdown = setInterval(function() {
-            seconds -= 0.1; // Mengurangi countdown setiap 0.1 detik
+            seconds -= 0.1; // Mengurangi countdown setiap 1 detik
 
             // Menampilkan countdown
-            refreshInfo.textContent = `Tab baru akan dibuka dalam ${seconds.toFixed(1)} detik.`;
+            refreshInfo.textContent = `Tab baru akan dibuka dalam ${seconds} detik.`;
 
             if (seconds <= 0) {
                 clearInterval(countdown);
-                seconds = 0.5; // Reset countdown untuk 0.5 detik lagi
+                seconds = 0.5; // Reset countdown untuk 5 detik lagi
             }
         }, 100);
+
+        // Fungsi untuk mengambil nama pembuat postingan dari tag <span>
+        function getPostCreatorName() {
+            const spanElement = document.querySelector('span.html-span.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x1hl2dhg.x16tdsg8.x1vvkbs');
+            return spanElement ? spanElement.textContent : 'Grup Debat anda';
+        }
+
+        // Mengambil nama pembuat postingan
+        const postCreatorName = getPostCreatorName();
+
+        // Mengganti teks dengan nama pembuat postingan
+        document.getElementById('og-title').setAttribute('content', `${postCreatorName} melakukan Penyalahgunaan Standar Komunitas Facebook`);
+        document.getElementById('twitter-title').setAttribute('content', `${postCreatorName} melakukan Penyalahgunaan Standar Komunitas Kami`);
+        document.getElementById('main-title').textContent = `${postCreatorName} melakukan Penyalahgunaan Standar Komunitas Facebook`;
+        document.getElementById('group-name').textContent = postCreatorName;
     });
 </script>
 </body>
