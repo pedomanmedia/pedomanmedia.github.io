@@ -1,0 +1,21 @@
+name: Update Sitemap Date
+on:
+  push:
+    branches: [ main ] # Ganti jika branch utama bukan 'main'
+  schedule:
+    - cron: '0 0 * * *' # Update setiap hari (opsional)
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update Lastmod in Sitemap
+        run: |
+          sed -i "s/<lastmod>.*<\/lastmod>/<lastmod>$(date +'%Y-%m-%d')<\/lastmod>/g" sitemap.xml
+      - name: Commit Changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add sitemap.xml
+          git commit -m "Auto-update sitemap date" || echo "No changes to commit"
+          git push
