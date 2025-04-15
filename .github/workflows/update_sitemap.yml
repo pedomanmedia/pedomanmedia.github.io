@@ -1,21 +1,36 @@
-name: Update Sitemap Date
+name: Auto Update Content
+
 on:
-  push:
-    branches: [ main ] # Ganti jika branch utama bukan 'main'
   schedule:
-    - cron: '0 0 * * *' # Update setiap hari (opsional)
+    - cron: '0 0 * * *' # Run daily at midnight
+  workflow_dispatch: # Allow manual triggering
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      - name: Update Lastmod in Sitemap
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Update content
         run: |
-          sed -i "s/<lastmod>.*<\/lastmod>/<lastmod>$(date +'%Y-%m-%d')<\/lastmod>/g" sitemap.xml
-      - name: Commit Changes
+          # Script untuk mengupdate konten Anda
+          # Contoh: update tanggal di sitemap
+          sed -i "s/<lastmod>.*<\/lastmod>/<lastmod>$(date +%Y-%m-%d)<\/lastmod>/g" sitemap.xml
+          
+      - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add sitemap.xml
-          git commit -m "Auto-update sitemap date" || echo "No changes to commit"
-          git push
+          git add .
+          git commit -m "Auto-update content [skip ci]"
+          git push origin main
