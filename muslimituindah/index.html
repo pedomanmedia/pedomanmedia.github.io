@@ -3,112 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Diskusi: Apakah Isa Alaihissalam Tuhan?">
-    <meta property="og:description" content="Ikuti diskusi menarik tentang status ketuhanan Nabi Isa Alaihissalam dan berikan pendapat Anda">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://pedomanmedia.github.io/muslimituindah">
-    <meta property="og:image" content="https://png.pngtree.com/png-clipart/20221019/original/pngtree-allah-gold-kaligrafi-png-image_8703998.png">
-    <meta property="og:image:width" content="auto">
-    <meta property="og:image:height" content="auto">
-    <title>Muslim Itu Indah</title>
+    <title>Survey Keimanan</title>
+    <style>
+        .hidden { display: none; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
 </head>
 <body>
-    <div class="cookie-banner" id="cookieBanner">
+    <div id="cookieBanner">
         <h2>Survey Keimanan Muslim</h2>
-        <button onclick="acceptCookies('Bukan, Isa adalah Nabi')">Bukan, Isa adalah Nabi</button>
-        <button onclick="acceptCookies('Ya, Isa adalah Tuhan')">Ya, Isa adalah Tuhan</button>
+        <button onclick="setResponse('Bukan, Isa adalah Nabi')">Bukan, Isa adalah Nabi</button>
+        <button onclick="setResponse('Ya, Isa adalah Tuhan')">Ya, Isa adalah Tuhan</button>
     </div>
 
-    <div id="content" style="display:none;">
-        <h1>Selamat Datang</h1>
-        <h2>Pertanyaan tentang Nabi Isa Alaihissalam</h2>
-        
-        <!-- Form untuk mengirim data ke Formspree -->
-        <form id="surveyForm" action="https://formspree.io/f/xwplzqar" method="POST">
-            <input type="hidden" name="Jawaban User" id="userAnswer">
-            <input type="hidden" name="Waktu Jawaban" id="answerTime">
-            <input type="hidden" name="User Agent" id="userAgent">
+    <div id="content" class="hidden">
+        <form id="surveyForm">
+            <input type="hidden" name="_replyto" value="" id="emailField">
+            <input type="hidden" name="_subject" value="Survey Keimanan - Jawaban Baru">
+            <input type="hidden" name="Jawaban" id="jawabanField">
             
             <div>
-                <label for="comments">Tambahkan komentar (opsional):</label><br>
-                <textarea id="comments" name="Komentar User" rows="4" cols="50"></textarea>
+                <label>Email Anda (opsional):</label>
+                <input type="email" name="Email" placeholder="email@contoh.com">
             </div>
             
-            <button type="submit">Kirim Jawaban</button>
+            <div>
+                <label>Komentar:</label>
+                <textarea name="Komentar" rows="4"></textarea>
+            </div>
+            
+            <button type="submit">Kirim</button>
         </form>
         
-        <div id="formResponse" style="margin-top: 15px; display: none;"></div>
+        <div id="formResponse"></div>
     </div>
 
     <script>
-        // Variabel untuk menyimpan jawaban user
-        let userResponse = '';
-        
-        // Fungsi untuk menangani jawaban user
-        function acceptCookies(answer) {
-            userResponse = answer;
+        // 1. Tangkap jawaban user
+        function setResponse(answer) {
+            document.getElementById('jawabanField').value = answer;
+            document.getElementById('cookieBanner').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
             
-            // Set nilai input hidden
-            document.getElementById("userAnswer").value = answer;
-            document.getElementById("answerTime").value = new Date().toLocaleString();
-            document.getElementById("userAgent").value = navigator.userAgent;
-            
-            // Tampilkan alert
-            alert(`Anda menjawab: ${answer}`);
-            
-            // Sembunyikan banner dan tampilkan form
-            document.getElementById("cookieBanner").style.display = "none";
-            document.getElementById("content").style.display = "block";
-            
-            // Simpan jawaban di cookie
-            document.cookie = `survey_answer=${encodeURIComponent(answer)}; max-age=86400`; // Expires in 1 day
+            // Simpan di localStorage juga
+            localStorage.setItem('surveyAnswer', answer);
         }
-        
-        // Fungsi untuk mendapatkan cookie
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
-        }
-        
-        // Handler untuk pengiriman form
-        document.getElementById("surveyForm").addEventListener("submit", function(e) {
+
+        // 2. Handle form submission
+        document.getElementById('surveyForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Tambahkan data tambahan sebelum dikirim
             const form = e.target;
-            const formData = new FormData(form);
+            const responseDiv = document.getElementById('formResponse');
+            responseDiv.innerHTML = "Mengirim...";
+            responseDiv.className = "";
             
-            // Tambahkan cookie jika ada
-            const savedAnswer = getCookie('survey_answer');
-            if (savedAnswer) {
-                formData.append('Cookie Answer', savedAnswer);
+            // Konversi form data ke format x-www-form-urlencoded
+            const formData = new URLSearchParams();
+            for (const pair of new FormData(form)) {
+                formData.append(pair[0], pair[1]);
             }
             
-            // Kirim data ke Formspree
-            fetch(form.action, {
-                method: "POST",
+            // Kirim ke Formspree
+            fetch('https://formspree.io/f/xwplzqar', {
+                method: 'POST',
                 body: formData,
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
             .then(response => {
                 if (response.ok) {
-                    // Tampilkan pesan sukses
-                    document.getElementById("formResponse").style.display = "block";
-                    document.getElementById("formResponse").innerHTML = 
-                        "<p style='color:green;'>Terima kasih! Jawaban Anda telah terkirim.</p>";
-                    form.style.display = "none";
+                    responseDiv.innerHTML = "Terima kasih! Jawaban Anda telah terkirim.";
+                    responseDiv.className = "success";
+                    form.reset();
+                    
+                    // Redirect atau lakukan sesuatu setelah pengiriman
+                    setTimeout(() => {
+                        window.location.href = "terimakasih.html";
+                    }, 2000);
                 } else {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Gagal mengirim');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById("formResponse").style.display = "block";
-                document.getElementById("formResponse").innerHTML = 
-                    "<p style='color:red;'>Maaf, terjadi kesalahan saat mengirim jawaban.</p>";
+                responseDiv.innerHTML = "Maaf, terjadi error saat mengirim. Silakan coba lagi.";
+                responseDiv.className = "error";
             });
         });
     </script>
