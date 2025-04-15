@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey Keimanan</title>
+    <!-- Leaflet CSS/JS (OpenStreetMap) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         .hidden { display: none; }
         .success { color: green; }
         .error { color: red; }
+        #map { height: 300px; margin: 1rem 0; border: 1px solid #ccc; }
     </style>
 </head>
 <body>
@@ -22,10 +26,19 @@
             <input type="hidden" name="_replyto" value="" id="emailField">
             <input type="hidden" name="_subject" value="Survey Keimanan - Jawaban Baru">
             <input type="hidden" name="Jawaban" id="jawabanField">
+            <!-- Data Lokasi -->
+            <input type="hidden" name="Koordinat" id="koordinatField">
+            <input type="hidden" name="Alamat" id="alamatField">
             
             <div>
                 <label>Email Anda (opsional):</label>
                 <input type="email" name="Email" placeholder="email@contoh.com">
+            </div>
+            
+            <div>
+                <label>Lokasi Terdeteksi:</label>
+                <div id="map"></div>
+                <p id="locationText">Mendeteksi lokasi...</p>
             </div>
             
             <div>
@@ -45,52 +58,100 @@
             document.getElementById('jawabanField').value = answer;
             document.getElementById('cookieBanner').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
-            
-            // Simpan di localStorage juga
             localStorage.setItem('surveyAnswer', answer);
+            
+            // Mulai deteksi lokasi
+            detectLocation();
         }
 
-        // 2. Handle form submission
+        // 2. Deteksi lokasi berbasis IP + tampilkan peta
+        let map, marker;
+        async function detectLocation() {
+            const locationText = document.getElementById('locationText');
+            
+            try {
+                // Dapatkan lokasi kasar via IP-API
+                const ipResponse = await fetch('https://ipapi.co/json/');
+                const ipData = await ipResponse.json();
+                
+                if (!ipData.latitude || !ipData.longitude) {
+                    throw new Error("Lokasi tidak terdeteksi");
+                }
+
+                // Inisialisasi peta
+                initMap(ipData.latitude, ipData.longitude);
+                
+                // Dapatkan alamat dari OpenStreetMap Nominatim
+                const osmResponse = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${ipData.latitude}&lon=${ipData.longitude}`
+                );
+                const osmData = await osmResponse.json();
+                
+                locationText.textContent = osmData.display_name || "Lokasi tidak diketahui";
+                document.getElementById('alamatField').value = osmData.display_name || "Tidak tersedia";
+                
+            } catch (error) {
+                console.error("Error:", error);
+                locationText.textContent = "Lokasi tidak terdeteksi. Silakan pilih di peta.";
+                initMap(-6.1754, 106.8272); // Default: Jakarta
+            }
+        }
+
+        // 3. Inisialisasi peta Leaflet
+        function initMap(lat, lon) {
+            map = L.map('map').setView([lat, lon], 13);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            
+            // Tambahkan marker
+            marker = L.marker([lat, lon], { draggable: true }).addTo(map)
+                .bindPopup("Geser marker untuk memperbarui lokasi");
+            
+            // Update koordinat saat marker dipindah
+            marker.on('dragend', async function(e) {
+                const newLatLng = e.target.getLatLng();
+                document.getElementById('koordinatField').value = `${newLatLng.lat}, ${newLatLng.lng}`;
+                
+                // Dapatkan alamat baru
+                try {
+                    const osmResponse = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLatLng.lat}&lon=${newLatLng.lng}`
+                    );
+                    const osmData = await osmResponse.json();
+                    document.getElementById('alamatField').value = osmData.display_name;
+                    document.getElementById('locationText').textContent = osmData.display_name;
+                } catch (error) {
+                    console.error("Gagal mendapatkan alamat:", error);
+                }
+            });
+            
+            // Simpan koordinat awal
+            document.getElementById('koordinatField').value = `${lat}, ${lon}`;
+        }
+
+        // 4. Handle pengiriman formulir
         document.getElementById('surveyForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
             const form = e.target;
             const responseDiv = document.getElementById('formResponse');
             responseDiv.innerHTML = "Mengirim...";
             responseDiv.className = "";
             
-            // Konversi form data ke format x-www-form-urlencoded
-            const formData = new URLSearchParams();
-            for (const pair of new FormData(form)) {
-                formData.append(pair[0], pair[1]);
-            }
+            const formData = new URLSearchParams(new FormData(form));
             
-            // Kirim ke Formspree
             fetch('https://formspree.io/f/xwplzqar', {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                headers: { 'Accept': 'application/json' }
             })
             .then(response => {
                 if (response.ok) {
                     responseDiv.innerHTML = "Terima kasih! Jawaban Anda telah terkirim.";
                     responseDiv.className = "success";
-                    form.reset();
-                    
-                    // Redirect atau lakukan sesuatu setelah pengiriman
-                    setTimeout(() => {
-                        window.location.href = "terimakasih.html";
-                    }, 2000);
-                } else {
-                    throw new Error('Gagal mengirim');
-                }
+                    setTimeout(() => window.location.href = "terimakasih.html", 2000);
+                } else throw new Error('Gagal mengirim');
             })
             .catch(error => {
-                console.error('Error:', error);
-                responseDiv.innerHTML = "Maaf, terjadi error saat mengirim. Silakan coba lagi.";
+                responseDiv.innerHTML = "Maaf, terjadi error. Silakan coba lagi.";
                 responseDiv.className = "error";
             });
         });
