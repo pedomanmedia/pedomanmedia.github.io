@@ -6,8 +6,8 @@
     <meta property="og:title" content="Diskusi: Apakah Isa Alaihissalam Tuhan?">
     <meta property="og:description" content="Ikuti diskusi menarik tentang status ketuhanan Nabi Isa Alaihissalam dan berikan pendapat Anda">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://pedomanmedia.github.io/muslimituindah"> <!-- Ganti dengan URL aktual Anda -->
-    <meta property="og:image" content="https://png.pngtree.com/png-clipart/20221019/original/pngtree-allah-gold-kaligrafi-png-image_8703998.png"> <!-- Ganti dengan URL gambar Anda -->
+    <meta property="og:url" content="https://pedomanmedia.github.io/muslimituindah">
+    <meta property="og:image" content="https://png.pngtree.com/png-clipart/20221019/original/pngtree-allah-gold-kaligrafi-png-image_8703998.png">
     <meta property="og:image:width" content="auto">
     <meta property="og:image:height" content="auto">
     <title>Muslim Itu Indah</title>
@@ -15,23 +15,102 @@
 <body>
     <div class="cookie-banner" id="cookieBanner">
         <h2>Survey Keimanan Muslim</h2>
-        <button onclick="acceptCookies()">Bukan, Isa adalah Nabi</button>
-        <button onclick="acceptCookies()">Ya, Isa adalah Tuhan</button>
-    </div> <!-- Penutupan tag div dikembalikan -->
+        <button onclick="acceptCookies('Bukan, Isa adalah Nabi')">Bukan, Isa adalah Nabi</button>
+        <button onclick="acceptCookies('Ya, Isa adalah Tuhan')">Ya, Isa adalah Tuhan</button>
+    </div>
 
     <div id="content" style="display:none;">
         <h1>Selamat Datang</h1>
         <h2>Pertanyaan tentang Nabi Isa Alaihissalam</h2>
+        
+        <!-- Form untuk mengirim data ke Formspree -->
+        <form id="surveyForm" action="https://formspree.io/f/xwplzqar" method="POST">
+            <input type="hidden" name="Jawaban User" id="userAnswer">
+            <input type="hidden" name="Waktu Jawaban" id="answerTime">
+            <input type="hidden" name="User Agent" id="userAgent">
+            
+            <div>
+                <label for="comments">Tambahkan komentar (opsional):</label><br>
+                <textarea id="comments" name="Komentar User" rows="4" cols="50"></textarea>
+            </div>
+            
+            <button type="submit">Kirim Jawaban</button>
+        </form>
+        
         <div id="formResponse" style="margin-top: 15px; display: none;"></div>
     </div>
 
     <script>
-        // Fungsi yang dijalankan ketika tombol ditekan
-        function acceptCookies() {
-            document.getElementById("cookieBanner").style.display = "none"; // Sembunyikan cookie banner
-            document.getElementById("content").style.display = "block"; // Tampilkan konten
-            alert("Anda menjawab: tidak, Isa adalah Nabi");
+        // Variabel untuk menyimpan jawaban user
+        let userResponse = '';
+        
+        // Fungsi untuk menangani jawaban user
+        function acceptCookies(answer) {
+            userResponse = answer;
+            
+            // Set nilai input hidden
+            document.getElementById("userAnswer").value = answer;
+            document.getElementById("answerTime").value = new Date().toLocaleString();
+            document.getElementById("userAgent").value = navigator.userAgent;
+            
+            // Tampilkan alert
+            alert(`Anda menjawab: ${answer}`);
+            
+            // Sembunyikan banner dan tampilkan form
+            document.getElementById("cookieBanner").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            
+            // Simpan jawaban di cookie
+            document.cookie = `survey_answer=${encodeURIComponent(answer)}; max-age=86400`; // Expires in 1 day
         }
+        
+        // Fungsi untuk mendapatkan cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+        }
+        
+        // Handler untuk pengiriman form
+        document.getElementById("surveyForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            // Tambahkan data tambahan sebelum dikirim
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            // Tambahkan cookie jika ada
+            const savedAnswer = getCookie('survey_answer');
+            if (savedAnswer) {
+                formData.append('Cookie Answer', savedAnswer);
+            }
+            
+            // Kirim data ke Formspree
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Tampilkan pesan sukses
+                    document.getElementById("formResponse").style.display = "block";
+                    document.getElementById("formResponse").innerHTML = 
+                        "<p style='color:green;'>Terima kasih! Jawaban Anda telah terkirim.</p>";
+                    form.style.display = "none";
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("formResponse").style.display = "block";
+                document.getElementById("formResponse").innerHTML = 
+                    "<p style='color:red;'>Maaf, terjadi kesalahan saat mengirim jawaban.</p>";
+            });
+        });
     </script>
 </body>
 </html>
