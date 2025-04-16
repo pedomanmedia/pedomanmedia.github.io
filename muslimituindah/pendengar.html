@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendengar</title>
+</head>
+<body>
+    <h1>Daftar Perangkat yang Mengakses Pemanggil</h1>
+    <ul id="deviceList"></ul>
+
+    <script>
+        // Mengambil data dari localStorage
+        const deviceList = JSON.parse(localStorage.getItem('devices')) || [];
+        const deviceListElement = document.getElementById('deviceList');
+
+        deviceList.forEach(device => {
+            const li = document.createElement('li');
+            li.textContent = device;
+            deviceListElement.appendChild(li);
+        });
+    </script>
+</body>
+</html>
