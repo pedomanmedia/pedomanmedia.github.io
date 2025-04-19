@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aplikasi Kamera dengan Lokasi</title>
+  <style>
+    /* Reset and full screen black background */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: black;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #camera-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    #captureBtn {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 70px;
+      background: white;
+      border-radius: 50%;
+      border: 5px solid rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      transition: background 0.3s ease;
+      z-index: 10;
+    }
+    #captureBtn:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+    #captureBtn:active:not(:disabled) {
+      background: #ddd;
+    }
+    #photo {
+      display: none;
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    #location {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      max-width: 90%;
+      text-align: center;
+      z-index: 10;
+      font-size: 16px;
+    }
+    canvas {
+      display: none;
+    }
+    #permission-info {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      padding: 15px;
+      border-radius: 10px;
+      max-width: 90%;
+      text-align: center;
+      z-index: 20;
+      display: none;
+    }
+    #permission-btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #permission-btn:hover {
+      background: #3367d6;
+    }
+  </style>
+</head>
+<body>
+  <div id="permission-info">
+    <p>Aplikasi ini membutuhkan izin untuk mengakses kamera dan lokasi Anda.</p>
+    <button id="permission-btn">Berikan Izin</button>
+  </div>
+  
+  <div id="camera-container">
+    <video id="video" autoplay playsinline></video>
+    <button id="captureBtn" title="Ambil Foto"></button>
+    <div id="location">Izin kamera dan lokasi diperlukan untuk menggunakan aplikasi ini.</div>
+  </div>
+  
+  <canvas id="canvas"></canvas>
+  <img id="photo" alt="Hasil Jepretan Foto" />
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const photo = document.getElementById('photo');
+    const locationDiv = document.getElementById('location');
+    const captureBtn = document.getElementById('captureBtn');
+    const permissionInfo = document.getElementById('permission-info');
+    const permissionBtn = document.getElementById('permission-btn');
+
+    // Disable capture button until permissions granted
+    captureBtn.disabled = true;
+    let stream = null;
+
+    // Show permission info if not granted
+    function checkPermissions() {
+      permissionInfo.style.display = 'block';
+    }
+
+    // Request camera and location permissions explicitly before usage
+    async function requestPermissions() {
+      try {
+        // Request camera permission
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            facingMode: 'environment',
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          }, 
+          audio: false 
+        });
+        video.srcObject = stream;
+
+        // Request location permission
+        const position = await new Promise((resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error('Geolocation tidak didukung oleh browser ini.'));
+          } else {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { 
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            });
+          }
+        });
+
+        // If both permissions granted
+        permissionInfo.style.display = 'none';
+        captureBtn.disabled = false;
+        locationDiv.textContent = 'Siap mengambil foto. Arahkan kamera ke objek.';
+        
+        // Update location initially
+        updateLocation(position);
+      } catch (err) {
+        console.error('Permission error:', err);
+        let errorMessage = '';
+        
+        if (err.name === 'NotAllowedError') {
+          errorMessage = 'Izin kamera/lokasi ditolak. Silakan berikan izin secara manual.';
+        } else if (err.name === 'NotFoundError') {
+          errorMessage = 'Kamera tidak ditemukan. Pastikan perangkat memiliki kamera.';
+        } else if (err.name === 'NotReadableError') {
+          errorMessage = 'Kamera sedang digunakan oleh aplikasi lain.';
+        } else if (err.name === 'OverconstrainedError') {
+          errorMessage = 'Kamera tidak mendukung mode yang diminta.';
+        } else if (err.name === 'PositionUnavailableError') {
+          errorMessage = 'Informasi lokasi tidak tersedia.';
+        } else if (err.name === 'TimeoutError') {
+          errorMessage = 'Permintaan lokasi melebihi batas waktu.';
+        } else {
+          errorMessage = 'Terjadi kesalahan: ' + err.message;
+        }
+        
+        locationDiv.textContent = errorMessage;
+        permissionInfo.querySelector('p').textContent = errorMessage;
+        permissionInfo.style.display = 'block';
+        
+        // Stop camera stream if it was started
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
+      }
+    }
+
+    // Manual permission request button
+    permissionBtn.addEventListener('click', () => {
+      requestPermissions();
+    });
+
+    // Get current position with better error handling
+    function getCurrentPosition() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Geolocation tidak didukung oleh browser ini.'));
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            resolve, 
+            reject, 
+            { 
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            }
+          );
+        }
+      });
+    }
+
+    // Reverse geocode using OpenStreetMap Nominatim API
+    async function reverseGeocode(lat, lon) {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&accept-language=id`;
+      try {
+        const response = await fetch(url, { 
+          headers: { 
+            'User-Agent': 'CameraLocationApp/1.0',
+            'Referer': window.location.href
+          } 
+        });
+        if (!response.ok) throw new Error('Gagal mendapatkan data lokasi');
+        const data = await response.json();
+        return data.display_name || 'Lokasi tidak ditemukan';
+      } catch (err) {
+        console.error('Geocoding error:', err);
+        return `Lokasi: ${lat.toFixed(6)}, ${lon.toFixed(6)} (Gagal mendapatkan nama lokasi)`;
+      }
+    }
+
+    // Update location display
+    async function updateLocation(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+      
+      try {
+        const locationName = await reverseGeocode(lat, lon);
+        locationDiv.textContent = `${locationName} (Akurasi: ${Math.round(accuracy)} meter)`;
+      } catch (err) {
+        locationDiv.textContent = `Lokasi: ${lat.toFixed(6)}, ${lon.toFixed(6)} (Akurasi: ${Math.round(accuracy)} meter)`;
+      }
+    }
+
+    // Capture photo and get location
+    captureBtn.addEventListener('click', async () => {
+      // Disable button during processing
+      captureBtn.disabled = true;
+      locationDiv.textContent = 'Memproses...';
+      
+      try {
+        // Draw video frame to canvas
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Convert canvas to image
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        photo.src = dataUrl;
+        photo.style.display = 'block';
+
+        // Get location
+        const position = await getCurrentPosition();
+        await updateLocation(position);
+        
+        // Create filename with timestamp and location
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const lat = position.coords.latitude.toFixed(6);
+        const lon = position.coords.longitude.toFixed(6);
+        const filename = `foto-${timestamp}_${lat}_${lon}.jpg`;
+
+        // Automatically trigger download to save photo
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Show success message
+        locationDiv.textContent = 'Foto berhasil disimpan! ' + locationDiv.textContent;
+      } catch (err) {
+        console.error('Capture error:', err);
+        locationDiv.textContent = 'Gagal: ' + (err.message || 'Tidak dapat menyimpan foto');
+      } finally {
+        captureBtn.disabled = false;
+      }
+    });
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    });
+
+    // Initial check
+    checkPermissions();
+  </script>
+</body>
+</html>
