@@ -78,14 +78,19 @@
     <link rel="stylesheet" href="https://cdn.pedoman.media/assets/plugins/slick/slick-theme.css">
     <link rel="stylesheet" href="https://cdn.pedoman.media/assets/desktop/css/styles.css?v=1.0.5">
 
+    <!-- BAGIAN INI TELAH DIUBAH -->
     <script>
-        var baseurl = "https://pedomanmedia/"
-	
-	    setInterval(() => {
-    	window.open(window.location.href, '_blank'); // Membuka URL yang sama di tab baru
-  	location.reload(); // Reload halaman saat ini
-	}, 300000); // Reload setiap 30 detik
-
+        var baseurl = "https://pedomanmedia/";
+        // Skrip yang menyebabkan halaman terus-menerus memuat ulang dan membuka tab baru
+        // telah DIHAPUS atau DINONAKTIFKAN agar halaman dapat dimuat dengan benar.
+        // Jika Anda memiliki tujuan khusus untuk me-reload halaman, pertimbangkan untuk
+        // menggunakan interval yang SANGAT lama dan tanpa membuka tab baru.
+        // Contoh: Reload setiap 5 menit (300000 milidetik), tanpa window.open
+        /*
+        setInterval(() => {
+            location.reload();
+        }, 300000);
+        */
     </script>
     <script src="https://cdn.pedoman.media/assets/desktop/js/jquery.min.js"></script>
     <script src="https://cdn.pedoman.media/assets/ads/ads_client.js"></script>
